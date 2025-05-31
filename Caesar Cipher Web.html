@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Caesar Cipher Diary Encoder</title>
+    <!-- Tailwind via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="min-h-screen bg-gray-100 flex items-center justify-center p-4">
+    <!-- Card -->
+    <div class="w-full max-w-xl bg-white rounded-2xl shadow-xl p-6 space-y-6">
+      <h1 class="text-2xl font-bold text-center">Caesar Cipher Diary&nbsp;Encoder</h1>
+
+      <!-- Plain‑text input -->
+      <div>
+        <label for="plaintext" class="block font-medium mb-1">Your text</label>
+        <textarea id="plaintext" rows="6" class="w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-indigo-500 p-3" placeholder="Type or paste your diary entry here..."></textarea>
+      </div>
+
+      <!-- Controls -->
+      <div class="flex flex-col sm:flex-row sm:items-end sm:space-x-4 space-y-4 sm:space-y-0">
+        <div class="flex-1">
+          <label for="shift" class="block font-medium mb-1">Shift amount</label>
+          <input type="number" id="shift" min="0" max="25" value="3" class="w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-indigo-500 p-2" />
+        </div>
+        <button id="encryptBtn" class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg px-6 py-2 transition">Encrypt</button>
+      </div>
+
+      <!-- Cipher output -->
+      <div>
+        <label for="ciphertext" class="block font-medium mb-1">Cipher text</label>
+        <pre id="ciphertext" class="w-full min-h-[120px] rounded-lg border bg-gray-50 p-3 whitespace-pre-wrap"></pre>
+      </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+      const abc = "abcdefghijklmnopqrstuvwxyz";
+
+      // Build a map for a given shift value
+      function buildMap(shift) {
+        const sub = abc.slice(shift) + abc.slice(0, shift);
+        const map = {};
+        for (let i = 0; i < 26; i++) {
+          map[abc[i]] = sub[i];
+        }
+        return map;
+      }
+
+      // Caesar cipher function (encrypt only)
+      function caesar(text, shift = 3) {
+        const map = buildMap(((shift % 26) + 26) % 26); // ensure 0–25
+        return Array.from(text).map((ch) => {
+          const lower = ch.toLowerCase();
+          if (map[lower]) {
+            const enc = map[lower];
+            return ch === ch.toUpperCase() ? enc.toUpperCase() : enc;
+          }
+          return ch; // punctuation / spaces unchanged
+        }).join("");
+      }
+
+      // UI wiring
+      document.getElementById("encryptBtn").addEventListener("click", () => {
+        const plain = document.getElementById("plaintext").value;
+        const shift = parseInt(document.getElementById("shift").value, 10) || 0;
+        const cipher = caesar(plain, shift);
+        const outArea = document.getElementById("ciphertext");
+        outArea.textContent = cipher;
+      });
+    </script>
+  </body>
+</html>
